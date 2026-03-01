@@ -86,12 +86,12 @@ def downloadClientContact():
         phone=number,
         company=settings.get("company", "")
     )
+    return Response(
+    vcardText,
+    mimetype="text/vcard",
+    headers={ "Content-Disposition": "attachment; filename=client.vcf" }
+)
 
-    filename = "clientContact.vcf"
-    with open(filename, "w") as f:
-        f.write(vcardText)
-
-    return send_file(filename, as_attachment=True)
 
 #admin routes
 @app.route("/admin/numbers")
@@ -116,12 +116,11 @@ def downloadSubmittedContact(index):
         phone=person.get("phone", ""),
         company=""
     )
-
-    filename = person.get("name", "contact") + ".vcf"
-    with open(filename, "w") as f:
-        f.write(vcardText)
-
-    return send_file(filename, as_attachment=True)
+    return Response(
+        vcardText,
+        mimetype="text/vcard",
+        headers={ "Content-Disposition": "attachment; filename=contact.vcf" }
+    )
 
 
 @app.post("/admin/updateAppointment")
@@ -233,4 +232,5 @@ def chat():
 
 #run the app
 if __name__ == "__main__":
+
     app.run(debug=True)
