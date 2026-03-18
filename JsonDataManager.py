@@ -1,40 +1,24 @@
 import json
 import os
-import urllib.request
 
 class DataManager:
     def __init__(self, basePath="data"):
-        self.url   = os.environ.get("UPSTASH_REDIS_REST_URL")
-        self.token = os.environ.get("UPSTASH_REDIS_REST_TOKEN")
+        self.basePath = basePath
 
-    def _request(self, command_parts):
-        # Build the URL by joining command parts with /
-        # e.g. ["SET", "mykey", "myvalue"] becomes /SET/mykey/myvalue
-        path = "/".join(urllib.request.quote(str(p), safe="") for p in command_parts)
-        full_url = self.url + "/" + path
-
-        req = urllib.request.Request(
-            full_url,
-            headers={ "Authorization": "Bearer " + self.token }
-        )
-
-        with urllib.request.urlopen(req) as response:
-            result = json.loads(response.read().decode())
-            return result.get("result")
-
+    def Getpath(self, fileName):
+        return os.path.join(self.basePath, fileName)
+    
     def load(self, fileName, default=None):
-        # Use the filename as the key, e.g. "settings.json"
-        result = self._request(["GET", fileName])
-
-        if result is None:
+        path = self.Getpath(fileName)
+        if not os.path.exists(path):
             return default
-
         try:
-            return json.loads(result)
-        except:
+            with open(path, "r") as f:
+                return json.load(f)
+        except json.JSONDecodeError:
             return default
-
+        
     def save(self, fileName, data):
-        # Convert the data to a JSON string and store it
-        value = json.dumps(data)
-        self._request(["SET", fileName, value])
+        path = self.Getpath(fileName)
+        with open(path, "w") as f:
+            json.dump(data, f, indent=4)
