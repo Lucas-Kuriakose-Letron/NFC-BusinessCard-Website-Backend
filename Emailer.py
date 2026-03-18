@@ -3,8 +3,8 @@ from email.mime.text import MIMEText
 
 
 class Emailer:
-    sender_email   = "kuriakose.biji@gmail.com"
-    sender_password = "kadn velr fhkh skqn"
+    sender_email   = ""
+    sender_password = ""
 
 def setup_email(gmail_address, app_password):
     Emailer.sender_email = gmail_address
